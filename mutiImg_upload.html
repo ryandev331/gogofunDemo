@@ -24,18 +24,42 @@
         border: 1px solid #eee;
     }
     
-    li .order {
+    li span {
         display: block;
         position: absolute;
+        color: rgb(0, 0, 0);
+        text-align: center;
+    }
+    
+    li span.circle {
         width: 30px;
         height: 30px;
         border-radius: 50%;
-        background: #493f3f;
-        color: #fff;
-        text-align: center;
+        background: rgb(207, 203, 203);
         line-height: 30px;
+    }
+    
+    li .order {
         bottom: 0;
         right: 0;
+    }
+    
+    li .close {
+        top: 0;
+        right: 0;
+    }
+    
+    li .imgCat {
+        width: 100%;
+        bottom: 0;
+        left: 0;
+        right: 0;
+    }
+    
+    li input[type="checkbox"] {
+        position: absolute;
+        top: 0;
+        left: 0;
     }
     
     li img {
@@ -65,10 +89,13 @@
     <script src="./asset/vue.js"></script>
     <div id="app">
 
-        <transition-group name="drog" tag="ul" class="imgWrapper">
-            <li draggable="true" v-for="(imgSrc,idx) in imgList" :key="idx" @dragstart="dragstart($event,idx)" @dragover="allowDrop" @drop="drop($event,idx)">
-                <img :src="imgSrc" alt="image">
-                <span class="order">{{idx+1}}</span>
+        <transition-group name="drog" tag="ul" class="imgWrapper" v-if="imgList.length > 0">
+            <li draggable="true" v-for="(item,idx) in imgList" :key="idx" @dragstart="dragstart($event,idx)" @dragover="allowDrop" @drop="drop($event,idx)">
+                <img :src="item.src" alt="image">
+                <span class="circle order">{{idx+1}}</span>
+                <span class="circle close" @click="removeImg($event,idx)">X</span>
+                <input type="checkbox" @change="selectImg($event,idx)" ref="check" :key="idx">
+                <span class="imgCat">{{item.catName}}</span>
             </li>
         </transition-group>
 
@@ -77,6 +104,11 @@
         <br>
         <input id="upload_mutipleFile" ref="file" type="file" @change="uploadFile" accept="image/*" multiple>
         <label for="upload_mutipleFile">上傳格局圖</label>
+        <br>
+        <select name="" id="" v-model="nowImgCat" @change="selectImgCat($event)">
+			<option :value="null">請選擇</option>
+			<option :value="item.id" v-for="(item,idx) in imgCats" :key="idx">{{item.name}}</option>
+		</select>
     </div>
 
 </body>
@@ -85,6 +117,27 @@
     let data = {
         imgList: [],
         file: null,
+        nowImgList: [],
+        imgCats: [{
+            id: "1",
+            name: "封面照片"
+        }, {
+            id: "2",
+            name: "主臥室"
+        }, {
+            id: "3",
+            name: "浴室"
+        }, {
+            id: "4",
+            name: "走道、玄關"
+        }, {
+            id: "5",
+            name: "房間一"
+        }, {
+            id: "6",
+            name: "房間二"
+        }, ],
+        nowImgCat: null
 
     }
     let reader = new FileReader()
@@ -99,7 +152,9 @@
                 const input = e.target
                 console.log(fileNum)
                 const readFileAsync = file => new Promise(resolve => {
-                    reader.onload = evt => resolve(evt.target.result)
+                    reader.onload = evt => resolve({
+                        src: evt.target.result
+                    })
                     reader.readAsDataURL(file)
                 })
                 if (fileNum > 15) {
@@ -128,6 +183,31 @@
             },
             clearImgList: function() {
                 this.imgList = [];
+            },
+            removeImg: function(e, index) {
+                this.imgList.splice(index, 1)
+            },
+            selectImgCat: function(e) {
+                let nowImgList = this.nowImgList,
+                    imgList = this.imgList,
+                    nowImgCat = this.nowImgCat,
+                    imgCatName = this.imgCatName,
+                    self = this;
+                // console.log(self.$refs)
+                nowImgList.forEach(function(index) {
+                    self.$set(imgList[index], "catName", imgCatName)
+                    self.$set(imgList[index], "catId", nowImgCat)
+                    self.$refs.check[index].checked = false;
+
+                });
+
+                this.nowImgList = [];
+
+            },
+            selectImg: function(e, index) {
+                this.nowImgList.push(index)
+                this.nowImgCat = null
+                console.log(this.nowImgList)
             }
 
         },
@@ -138,6 +218,19 @@
                 } else {
                     return true
                 }
+            },
+            imgCatName: function() {
+                let name = "未分類",
+                    nowImgCat = this.nowImgCat,
+                    imgCats = this.imgCats,
+                    imgCatNum = imgCats.length;
+                imgCats.forEach(function(imgCat) {
+                    if (imgCat.id === nowImgCat) {
+                        name = imgCat.name
+                    }
+                });
+                return name
+
             }
         },
     })
