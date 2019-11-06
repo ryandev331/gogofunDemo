@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<style>
+    ul.imgWrapper {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        align-items: center;
+        list-style: none;
+        padding: 0 10px;
+    }
+    
+    li {
+        height: 200px;
+        position: relative;
+        width: 24%;
+        border: 1px solid #eee;
+    }
+    
+    li .order {
+        display: block;
+        position: absolute;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: #493f3f;
+        color: #fff;
+        text-align: center;
+        line-height: 30px;
+        bottom: 0;
+        right: 0;
+    }
+    
+    li img {
+        max-height: 100%;
+        max-width: 100%
+    }
+    
+    .drog-move {
+        transition: transform 1s;
+    }
+    
+    input[type="file"] {
+        display: none;
+    }
+    
+    label {
+        display: block;
+        width: 100px;
+        background: #FF7500;
+        padding: 8px;
+        border-radius: 4px;
+        text-align: center;
+    }
+</style>
+
+<body>
+    <script src="./asset/vue.js"></script>
+    <div id="app">
+
+        <transition-group name="drog" tag="ul" class="imgWrapper">
+            <li draggable="true" v-for="(imgSrc,idx) in imgList" :key="idx" @dragstart="dragstart($event,idx)" @dragover="allowDrop" @drop="drop($event,idx)">
+                <img :src="imgSrc" alt="image">
+                <span class="order">{{idx+1}}</span>
+            </li>
+        </transition-group>
+
+        <input id="upload_file" ref="file" type="file" @change="uploadFile" accept="image/*">
+        <label for="upload_file">上傳單張圖片</label>
+        <br>
+        <input id="upload_mutipleFile" ref="file" type="file" @change="uploadFile" accept="image/*" multiple>
+        <label for="upload_mutipleFile">上傳格局圖</label>
+    </div>
+
+</body>
+
+<script>
+    let data = {
+        imgList: [],
+        file: null,
+
+    }
+    let reader = new FileReader()
+    new Vue({
+        el: "#app",
+        data,
+        methods: {
+            async uploadFile(e) {
+                this.clearImgList()
+                const files = event.target.files
+                const fileNum = event.target.files.length
+                const input = e.target
+                console.log(fileNum)
+                const readFileAsync = file => new Promise(resolve => {
+                    reader.onload = evt => resolve(evt.target.result)
+                    reader.readAsDataURL(file)
+                })
+                if (fileNum > 15) {
+                    alert('圖片超過15張')
+                } else {
+                    for (let i = 0; i < fileNum; i++) {
+                        this.imgList.push(await readFileAsync(files[i]))
+                        input.type = "text"
+                        input.type = "file"
+                    }
+                }
+
+            },
+            dragstart: function(e, index) {
+                e.dataTransfer.setData('Text', index)
+            },
+            drop: function(e, index) {
+                let tempImgList = this.imgList,
+                    dragIndex = e.dataTransfer.getData('Text'),
+                    temp = tempImgList.splice(dragIndex, 1)
+                tempImgList.splice(index, 0, temp[0]);
+                this.imgList = tempImgList;
+            },
+            allowDrop: function(e) {
+                e.preventDefault();
+            },
+            clearImgList: function() {
+                this.imgList = [];
+            }
+
+        },
+        computed: {
+            hasImg: function() {
+                if (this.imgList.length === 0) {
+                    return false
+                } else {
+                    return true
+                }
+            }
+        },
+    })
+</script>
+
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <script src="./asset/vue.js"></script>
+    <div id="app">
+        <input id="upload_file" ref="file" type="file" @change="uploadFile" accept="image/*">
+        <label for="upload_file">上傳單張圖片</label>
+
+
+
+        <div class="imgWrapper" v-if="hasImg">
+            <div class="img" v-for="imgSrc in imgList">
+                <img :src="imgSrc" alt="image">
+            </div>
+        </div>
+    </div>
+
+</body>
+
+<script>
+    let data = {
+        imgList: [],
+        file: null,
+
+    }
+    let reader = new FileReader()
+    new Vue({
+            el: "#app",
+            data,
+            methods: {
+                uploadFile: function(e) {
+                    reader.readAsDataURL(e.target.files[0])
+
+                },
+                fileupLoaded: function(e) {
+                    let input = this.$refs.file
+                    input.type = "text"
+                    input.type = "file"
+                    this.imgList.push(reader.result)
+                    console.log(reader.result)
+                },
+            },
+            computed: {
+                hasImg: function() {
+                    if (this.imgList.length === 0) {
+                        return false
+                    } else {
+                        return true
+                    }
+                }
+            },
+            mounted: function() {
+                reader.addEventListener('load', this.fileupLoaded)
+            },
+            beforeDestroy: function() {
+                reader.removeEventListener('load', this.fileupLoaded)
+            },
+        }
+
+    )
+</script>
+
+</html>
