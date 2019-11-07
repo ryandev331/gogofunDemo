@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://kit.fontawesome.com/1cb1e0774e.js" crossorigin="anonymous"></script>
+</head>
+<style>
+    #div1,
+    #div2 {
+        float: left;
+        width: 100px;
+        height: 35px;
+        margin: 10px;
+        padding: 10px;
+        border: 1px solid black;
+    }
+    
+    #app {
+        clear: both;
+        margin-top: 200px;
+    }
+    /* space photo */
+    
+    .space_photo {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+    }
+    
+    .space_photo .drop_zone {
+        width: 30%;
+        height: 150px;
+        margin-right: 10px;
+        margin-bottom: 10px;
+        /* background: #333333; */
+        border: 1px dashed #333333;
+    }
+    
+    .space_photo .drop_zone input {
+        display: none;
+    }
+    
+    .space_photo .drop_zone label.noPicture {
+        display: block;
+        widows: 100%;
+        height: 100%;
+        cursor: pointer;
+    }
+    
+    .space_photo .drop_zone label.noPicture div {
+        text-align: center;
+        height: 50%;
+    }
+    
+    .space_photo .drop_zone label.noPicture div:first-child {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 60%;
+    }
+    
+    .space_photo .drop_zone label.noPicture div:nth-child(2) {
+        height: 40%;
+    }
+    
+    .space_photo .drop_zone .hasPicture {
+        display: none;
+        width: 100%;
+        height: 100%;
+        position: relative;
+    }
+    
+    .space_photo .drop_zone .hasPicture .spaceName,
+    .space_photo .drop_zone .hasPicture .btn,
+    .space_photo .drop_zone .hasPicture ul {
+        position: absolute;
+    }
+    
+    .space_photo .drop_zone .hasPicture .spaceName {
+        line-height: 40px;
+        width: 130px;
+        height: 40px;
+        top: 10px;
+        left: 10px;
+        color: #999999;
+    }
+    
+    .space_photo .drop_zone .hasPicture .spaceName .badge {
+        background: #35446B;
+        color: #ffffff;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        display: inline-block;
+        text-align: center;
+        line-height: 20px;
+        font-size: 12px;
+        margin-left: 5px;
+    }
+    
+    .space_photo .drop_zone .hasPicture .btn {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        align-items: center;
+        width: 200px;
+        top: 0px;
+        bottom: 0px;
+        right: 0px;
+    }
+    
+    .space_photo .drop_zone .hasPicture .btn .clearAll,
+    .space_photo .drop_zone .hasPicture .btn .addFile {
+        width: 130px;
+        height: 40px;
+        color: #999999;
+        border: 1px solid #999999;
+        text-align: center;
+        line-height: 40px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    
+    .space_photo .drop_zone .hasPicture ul.imgWrapper {
+        display: flex;
+        width: 70%;
+        height: 100px;
+        /* flex-wrap: wrap; */
+        /* justify-content: center; */
+        align-items: center;
+        list-style: none;
+        padding: 0;
+        bottom: 0;
+        left: 5px;
+        overflow-x: hidden;
+        margin: 0;
+    }
+    
+    .space_photo .drop_zone .hasPicture .imgWrapper li {
+        height: 70%;
+        position: relative;
+        width: 80px;
+        border: 1px solid #eee;
+        margin-right: 20px;
+    }
+    
+    .space_photo .drop_zone .hasPicture .imgWrapper li img {
+        height: 100%;
+        width: 100%;
+    }
+    
+    .space_photo .drop_zone .hasPicture .imgWrapper li span {
+        display: block;
+        position: absolute;
+        color: rgb(0, 0, 0);
+        text-align: center;
+    }
+    
+    .space_photo .drop_zone .hasPicture .imgWrapper li .order {
+        width: 100%;
+        bottom: 0;
+        background: rgba(0, 0, 0, .5);
+        color: #ffffff;
+    }
+    
+    .space_photo .drop_zone .hasPicture .imgWrapper li .close {
+        top: -10px;
+        right: -10px;
+        width: 15px;
+        height: 15px;
+        font-size: 5px;
+        border-radius: 50%;
+        line-height: 15px;
+        background: #E0E0E0;
+        cursor: pointer;
+        z-index: 99;
+    }
+</style>
+<script src="./asset/vue.js"></script>
+<script>
+    function allowDrop(ev) {
+        ev.preventDefault();
+    }
+
+    function drag(ev) {
+        ev.dataTransfer.setData("text", ev.target.id);
+    }
+
+    function drop(ev) {
+        ev.preventDefault();
+        var data = ev.dataTransfer.getData("text");
+        ev.target.appendChild(document.getElementById(data));
+    }
+</script>
+</head>
+
+<body>
+
+    <h2>Drag and Drop</h2>
+    <p>Drag the image back and forth between the two div elements.</p>
+    <div>
+        <div id="div1" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <img src="http://lorempixel.com/640/480/nightlife" draggable="true" ondragstart="drag(event)" id="drag1" width="80%" height="90%">
+        </div>
+
+        <div id="div2" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+    </div>
+
+    <div id="app">
+        <select name="" id="" v-model="nowImgCat" @change="selectImgCat($event)">
+			<option :value="null">請選擇</option>
+			<option :value="item.id" v-for="(item,idx) in imgCats" :key="idx">{{item.name}}</option>
+		</select>
+
+        <div class="space_photo">
+            <div ref="drop_zone" class="drop_zone" v-for="(customSpace,idx) in customSpaceList" draggable="true" @dragstart="dragstart($event,idx)" @dragover="allowDrop" @drop="drop($event,idx)">
+                <input :id="'upload_mutipleFile'+idx" ref="file" type="file" @change="uploadFile($event,idx)" accept="image/*" multiple>
+                <label ref="noPicture" class="noPicture" :for="'upload_mutipleFile'+idx">
+					<div>{{customSpace.name}}</div>
+					<div><i class="fas fa-camera"></i> 添加照片</div>
+				</label>
+
+                <div ref="hasPicture" class="hasPicture">
+                    <div class="spaceName">
+                        {{customSpace.name}}
+                        <div class="badge">{{spaceTypeNum(idx)}}</div>
+                    </div>
+                    <div class="btn">
+                        <div class="clearAll" @click="clearImgList(idx)">全部清除</div>
+                        <label class="addFile" :for="'upload_mutipleFile'+idx">
+							<div><i class="fas fa-camera"></i> 添加照片</div>
+						</label>
+                        <!-- <div class="addFile" @click="uploadFile(e,idx)"><i class="fas fa-camera"></i> 添加照片</div> -->
+                    </div>
+                    <transition-group name="drog" tag="ul" class="imgWrapper" v-if="imgList.length > 0">
+                        <li draggable="true" v-for="(item,idx) in spaceTypeList(idx)" :key="idx" @dragstart="dragstart($event,idx)" @dragover="allowDrop" @drop="drop($event,idx)">
+                            <img :src="item.src" alt="image">
+                            <span class="order">{{idx+1}}</span>
+                            <span class="circle close" @click="removeImg($event,idx)">X</span>
+                            <!-- <input type="checkbox" @change="selectImg($event,idx)" ref="check" :key="idx">
+                            <span class="imgCat">{{item.catName}}</span> -->
+                        </li>
+                    </transition-group>
+                </div>
+            </div>
+
+
+
+        </div>
+
+    </div>
+    <script>
+        let data = {
+            customSpaceList: [{
+                id: "1",
+                name: "主臥室"
+            }, {
+                id: "1",
+                name: "浴室"
+            }, {
+                id: "1",
+                name: "走道、玄關"
+            }, {
+                id: "1",
+                name: "房間一"
+            }, {
+                id: "1",
+                name: "房間二"
+            }, ],
+            imgList: [],
+            file: null,
+            nowImgList: [],
+            imgCats: [{
+                id: "1",
+                name: "封面照片"
+            }, {
+                id: "2",
+                name: "主臥室"
+            }, {
+                id: "3",
+                name: "浴室"
+            }, {
+                id: "4",
+                name: "走道、玄關"
+            }, {
+                id: "5",
+                name: "房間一"
+            }, {
+                id: "6",
+                name: "房間二"
+            }, ],
+            nowImgCat: null
+
+        }
+        let reader = new FileReader()
+        new Vue({
+            el: "#app",
+            data,
+            methods: {
+                async uploadFile(e, index) {
+                    console.log(e)
+                    console.log("upfile:" + index)
+                    console.log(this.$refs.drop_zone[index])
+                    const files = event.target.files
+                    const fileNum = event.target.files.length
+                    const input = e.target
+                    const readFileAsync = file => new Promise(resolve => {
+                        reader.onload = evt => resolve({
+                            src: evt.target.result,
+                            spaceType: index
+                        })
+                        reader.readAsDataURL(file)
+                    })
+                    if (fileNum > 15) {
+                        alert('圖片超過15張')
+                    } else {
+                        for (let i = 0; i < fileNum; i++) {
+                            this.imgList.push(await readFileAsync(files[i]))
+                            input.type = "text"
+                            input.type = "file"
+                        }
+                    }
+                    //加長drop_zonem區塊，隱藏noPicture區塊，顯示hasPicture區塊
+                    // this.resetDropZone(idx)
+                    this.$refs.noPicture[index].style.display = "none"
+                    this.$refs.hasPicture[index].style.display = "block"
+                    this.$refs.drop_zone[index].style.width = "100%"
+                        // this.$set(this.customSpaceList[index], "num", nowImgCat)
+                },
+                dragstart: function(e, index) {
+                    e.dataTransfer.setData('Text', index)
+                },
+                drop: function(e, index) {
+                    let tempImgList = this.imgList,
+                        dragIndex = e.dataTransfer.getData('Text'),
+                        temp = tempImgList.splice(dragIndex, 1)
+                    tempImgList.splice(index, 0, temp[0]);
+                    this.imgList = tempImgList;
+                },
+                allowDrop: function(e) {
+                    e.preventDefault();
+                },
+                clearImgList: function(dropZoneIndex) {
+                    this.imgList = [];
+                    console.log(dropZoneIndex)
+                        // this.resetDropZone(dropZoneIndex);
+                },
+                removeImg: function(e, index) {
+                    this.imgList.splice(index, 1)
+                },
+                selectImgCat: function(e) {
+                    let nowImgList = this.nowImgList,
+                        imgList = this.imgList,
+                        nowImgCat = this.nowImgCat,
+                        imgCatName = this.imgCatName,
+                        self = this;
+                    // console.log(self.$refs)
+                    nowImgList.forEach(function(index) {
+                        self.$set(imgList[index], "catName", imgCatName)
+                        self.$set(imgList[index], "catId", nowImgCat)
+                        self.$refs.check[index].checked = false;
+
+                    });
+
+                    this.nowImgList = [];
+
+                },
+                selectImg: function(e, index) {
+                    this.nowImgList.push(index)
+                    this.nowImgCat = null
+                    console.log(this.nowImgList)
+                },
+                // resetDropZone: function(index) {
+                //     console.log(this)
+                //     console.log(index)
+                //     console.log(this.$refs.noPicture)
+                //     console.log(this.$refs.noPicture[index])
+                //     this.$refs.noPicture[index].style.display = "none"
+                //     this.$refs.hasPicture[index].style.display = "block"
+                //     this.$refs.drop_zone[index].style.width = "100%"
+                // },
+                spaceTypeNum: function(spaceType) {
+                    let arr = [];
+                    this.imgList.forEach(
+                        function(img) {
+                            if (img['spaceType'] === spaceType) {
+                                arr.push(img)
+                            }
+                        }
+                    )
+                    return arr.length
+                        // return this.imgList.length
+                },
+                spaceTypeList: function(spaceType) {
+                    let arr = [];
+                    this.imgList.forEach(
+                        function(img) {
+                            if (img['spaceType'] === spaceType) {
+                                arr.push(img)
+                            }
+                        }
+                    )
+                    return arr
+                        // return this.imgList.length
+                },
+
+            },
+            computed: {
+                hasImg: function() {
+                    if (this.imgList.length === 0) {
+                        return false
+                    } else {
+                        return true
+                    }
+                },
+                imgCatName: function() {
+                    let name = "未分類",
+                        nowImgCat = this.nowImgCat,
+                        imgCats = this.imgCats,
+                        imgCatNum = imgCats.length;
+                    imgCats.forEach(function(imgCat) {
+                        if (imgCat.id === nowImgCat) {
+                            name = imgCat.name
+                        }
+                    });
+                    return name
+
+                },
+
+            },
+        })
+    </script>
+</body>
+
+</html>
